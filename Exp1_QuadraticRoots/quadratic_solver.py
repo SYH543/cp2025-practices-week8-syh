@@ -1,82 +1,106 @@
 import numpy as np
 
-def standard_formula(a, b, c):
-    """使用标准公式求解二次方程 ax^2 + bx + c = 0
-    
-    参数:
-        a (float): 二次项系数
-        b (float): 一次项系数
-        c (float): 常数项
-    
-    返回:
-        tuple: 方程的两个根 (x1, x2) 或 None(无实根)
-    """
-    # 学生在此处实现代码
-    pass
 
-def alternative_formula(a, b, c):
-    """使用替代公式求解二次方程 ax^2 + bx + c = 0
-    该方法通过将标准公式的分子和分母都乘以 -b∓√(b^2-4ac) 得到
-    
-    参数:
-        a (float): 二次项系数
-        b (float): 一次项系数
-        c (float): 常数项
-    
-    返回:
-        tuple: 方程的两个根 (x1, x2) 或 None(无实根)
+def quadratic_roots_standard(a, b, c):
     """
-    # 学生在此处实现代码
-    pass
-
-def stable_formula(a, b, c):
-    """稳定的二次方程求根程序，能够处理各种特殊情况和数值稳定性问题
-    
-    参数:
-        a (float): 二次项系数
-        b (float): 一次项系数
-        c (float): 常数项
-    
-    返回:
-        tuple: 方程的两个根 (x1, x2) 或 None(无实根)
+    用标准公式求解二次方程 ax^2 + bx + c = 0
+    :param a: 二次项系数
+    :param b: 一次项系数
+    :param c: 常数项
+    :return: 方程的两个根组成的元组 (x1, x2)，若无实根则返回 None
     """
-    # 学生在此处实现代码
-    pass
+    delta = b ** 2 - 4 * a * c
+    if delta < 0:
+        return None
+    sqrt_delta = np.sqrt(delta)
+    root1 = (-b + sqrt_delta) / (2 * a)
+    root2 = (-b - sqrt_delta) / (2 * a)
+    return root1, root2
 
-def main():
-    test_cases = [
-        (1, 2, 1),             # 简单情况
-        (1, 1e5, 1),           # b远大于a和c
-        (0.001, 1000, 0.001),  # 原测试用例
+
+def quadratic_roots_alternative(a, b, c):
+    """
+    用替代公式求解二次方程 ax^2 + bx + c = 0
+    :param a: 二次项系数
+    :param b: 一次项系数
+    :param c: 常数项
+    :return: 方程的两个根组成的元组 (x1, x2)，若无实根则返回 None
+    """
+    delta = b ** 2 - 4 * a * c
+    if delta < 0:
+        return None
+    sqrt_delta = np.sqrt(delta)
+    root1 = (2 * c) / (-b - sqrt_delta)
+    root2 = (2 * c) / (-b + sqrt_delta)
+    return root1, root2
+
+
+def quadratic_roots_stable(a, b, c):
+    """
+    稳定的二次方程求根程序，能处理各类特殊情况和数值稳定性问题
+    :param a: 二次项系数
+    :param b: 一次项系数
+    :param c: 常数项
+    :return: 方程的两个根组成的元组 (x1, x2)，若无实根则返回 None
+    """
+    if abs(a) < 1e-10:
+        if abs(b) < 1e-10:
+            return None if abs(c) > 1e-10 else (0, 0)
+        single_root = -c / b
+        return single_root, single_root
+
+    delta = b ** 2 - 4 * a * c
+    if delta < 0:
+        return None
+
+    sqrt_delta = np.sqrt(delta)
+    if b >= 0:
+        root1 = (-b - sqrt_delta) / (2 * a)
+        root2 = (2 * c) / (-b - sqrt_delta)
+    else:
+        root1 = (-b + sqrt_delta) / (2 * a)
+        root2 = (2 * c) / (-b + sqrt_delta)
+    return root1, root2
+
+
+def execute_tests():
+    test_equations = [
+        (1, 2, 1),
+        (1, 1e5, 1),
+        (0.001, 1000, 0.001)
     ]
-    
-    for a, b, c in test_cases:
-        print("\n" + "="*50)
-        print("测试方程：{}x^2 + {}x + {} = 0".format(a, b, c))
-        
-        # 使用标准公式
-        roots1 = standard_formula(a, b, c)
+
+    for coef_a, coef_b, coef_c in test_equations:
+        print("\n" + "=" * 50)
+        print(f"测试方程：{coef_a}x^2 + {coef_b}x + {coef_c} = 0")
+
+        # 用标准公式求解
+        results_standard = quadratic_roots_standard(coef_a, coef_b, coef_c)
         print("\n方法1（标准公式）的结果：")
-        if roots1:
-            print("x1 = {:.15f}, x2 = {:.15f}".format(roots1[0], roots1[1]))
+        if results_standard:
+            root1, root2 = results_standard
+            print(f"x1 = {root1:.15f}, x2 = {root2:.15f}")
         else:
             print("无实根")
-        
-        # 使用替代公式
-        roots2 = alternative_formula(a, b, c)
+
+        # 用替代公式求解
+        results_alternative = quadratic_roots_alternative(coef_a, coef_b, coef_c)
         print("\n方法2（替代公式）的结果：")
-        if roots2:
-            print("x1 = {:.15f}, x2 = {:.15f}".format(roots2[0], roots2[1]))
+        if results_alternative:
+            root1, root2 = results_alternative
+            print(f"x1 = {root1:.15f}, x2 = {root2:.15f}")
         else:
             print("无实根")
-        
-        # 使用稳定的求根程序
-        roots3 = stable_formula(a, b, c)
+
+        # 用稳定公式求解
+        results_stable = quadratic_roots_stable(coef_a, coef_b, coef_c)
         print("\n方法3（稳定求根程序）的结果：")
-        if roots3:
-            print("x1 = {:.15f}, x2 = {:.15f}".format(roots3[0], roots3[1]))
+        if results_stable:
+            root1, root2 = results_stable
+            print(f"x1 = {root1:.15f}, x2 = {root2:.15f}")
         else:
             print("无实根")
+
 
 if __name__ == "__main__":
-    main()
+    execute_tests()
